@@ -5,114 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather API</title>
-
-    <style>
-        body{
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    gap: 100px;
-    align-items: center;
-    background: url("https://miro.medium.com/v2/resize:fit:1400/1*S8UogculWFLr3lVdLn05MA.jpeg");
-    background-size: cover;
-}
-.main{
-    width: 350px;
-    aspect-ratio: 1/1.3;
-    background-color: #B0E0E6;
-    box-shadow: 0 0 3px 5px  rgba(238, 255, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.firstimage{
-    width: 60px;
-    padding-bottom: 40px;
-    animation: fas-anime 3s linear infinite alternate;
-}
-@keyframes fas-anime {
-    from{
-     transform: scale(0.8);
-    }
-    to{
-     transform:  scale(1.4);
-    }
- }
-.secondimage{
-    width: 32px;
-    height: 32px;
-    animation: myshortanim 2s linear infinite alternate ;
-    bottom: 15px;
-  
-}
-@keyframes myshortanim {
-    from{
-        transform: translateX(-0.5rem)
-    }
-    to{
-        transform: translateX(0.5rem)
-    }
- }
-
- .third{
-    display: flex;
-    gap: 20px;
-    flex-direction: row;
- }
-
- #date{
-    font-size: 20px;
-    color: rgb(215, 69, 69);
- }
- .mid{
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   flex-direction: column;
- }
-.cityCountry{
-    font-size: 25px;
-    text-align: center;
-    color: darkorange;
-
-}
- .temp{
-    font-size: 30px;
-    color: hotpink;
-    letter-spacing: .5px;
-    word-spacing: .3px;
-
- }
- .last{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-    top: 50px;
- }
-
- .minmaxTemp{
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 25px;
-    color: coral;
- }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
    
 </head>
 <body>
     <div class="main">
-       
-       <img src="image/sunny.png" alt=""  class="firstimage">
-       
+        <div id="Searchbtn">
+        <input type="text" placeholder="Find Tempreture" id="search">
+        <button type="submit" id="btn">Find</button>
+       </div>
+       <img src="image/sunny.png"  id="imageone" alt=""  class="firstimage">
        <div class="mid">
         <div class="third">
             <img src="image/dog-walking.png" alt=""  class="secondimage">
-            <div class="cityCountry">{%location%},{%country%}</div>
+            <div class="cityCountry" id="cityCountry">Pune,IN</div>
         </div>
         
        <div id="date" >wed | OCT | 10:49AM</div>
@@ -121,8 +27,8 @@
       
 
         <div class="last">
-            <div class="temp"> {%tempval%} </div>  
-            <div class="minmaxTemp">Min  {%tempmin%} | Max {%tempmax%}</div>
+            <div class="temp" id="tempvalue">26.58°C </div>  
+            <div class="minmaxTemp" id="minmaxtemp">Min 26.58°C | Max  26.98°C</div>
         </div>
 
 
@@ -158,8 +64,54 @@
             return `${m[month]} | ${hours}:${mins}${periods}`
          }
 
+        const search = document.getElementById("search")
+        const minmaxTemp = document.getElementById("minmaxtemp")
+        const tempValue = document.getElementById("tempvalue")
+        const cityCountry = document.getElementById("cityCountry")
+        const btn = document.getElementById("btn")
+        const imageOne = document.getElementById("imageone")
+        
+         const weather =  async() =>{
+            
+            const cityName = search.value
+            const api = `http://api.openweathermap.org/data/2.5/weather?q=${cityName}&units=metric&appid=79794debc52a26ea0f2e7cb6f36b6bfe`
+            const fetchData =  await fetch(api)
+            const realData = await fetchData.json()
+            const tempStatus = realData.weather[0].main
+            console.log(tempStatus)
+            if(tempStatus === "Clouds"){
+                imageOne.src = "image/cloud.png"
+            }else if(tempStatus === "Sunny"){
+                imageOne.src = "image/sunny.png"
+            }else if(tempStatus === "Rainy"){
+                imageOne.src = "image/rain.png"
+            }else{
+                imageOne.src = "image/cloud.png"
+            }
+            if(realData.sys=== undefined){
+                minmaxTemp.innerText = "city not found"
+                tempValue.innerText = "city not found"
+                cityCountry.innerText = "city not found"
+            }else{
+            const country = realData.sys.country
+            const city = realData.name
+           
+             const Data = realData.main
+             
+             const mintemp = Data.temp_min;
+             const maxtemp = Data.temp_max;
+             const tempreture = Data.temp;
+             minmaxTemp.innerText = ` Min ${mintemp}°C| Max ${maxtemp}°C`
+             tempValue.innerText = `${tempreture}°C`;
+             cityCountry.innerText = `${city}, ${country}`
+             
+            }
+         }
+     weather()
 
-         curDate.innerHTML = getCurrentDay() + " | " + getCurrentTime(); 
+     btn.addEventListener("click" , weather)
+
+
 
 
 
