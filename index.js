@@ -29,12 +29,18 @@
             return `${m[month]} | ${hours}:${mins}${periods}`
          }
 
+
+
+
         const search = document.getElementById("search")
         const minmaxTemp = document.getElementById("minmaxtemp")
         const tempValue = document.getElementById("tempvalue")
         const cityCountry = document.getElementById("cityCountry")
         const btn = document.getElementById("btn")
         const imageOne = document.getElementById("imageone")
+        const date = document.getElementById("date")
+
+        date.innerText = `${getCurrentDay()} | ${getCurrentTime()}`
         
          const weather =  async() =>{
             
@@ -54,6 +60,7 @@
             }else{
                 imageOne.src = "image/cloud.png"
             }
+
 
 
             if(realData.sys=== undefined){
